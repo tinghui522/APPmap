@@ -1,5 +1,5 @@
 import React,{useState, useEffect} from "react";
-import { View,StyleSheet,Image } from "react-native";
+import {  Platform,StyleSheet, Text, View,Image } from "react-native";
 import MapView,{Marker} from "react-native-maps";
 import mapStyle from "./json/mapstyle.json";
 import Constants from "expo-constants";
@@ -7,8 +7,11 @@ import * as Location from "expo-location";
 import { Icon } from "react-native-elements";
 import axios from "axios";
 import metroJson from "./json/metro.json";
+import { VictoryPie } from "victory-native";
 const UBIKE_URL =
 "https://data.ntpc.gov.tw/api/datasets/71CD1490-A2DF-4198-BEF1-318479775E8A/json/preview";
+
+const dataColor = ["#FF2D2D", "#02C874"];
 
 const App =({navigation})=>{
     const [region, setRegion] = useState({
@@ -113,10 +116,18 @@ const App =({navigation})=>{
             title={`${site.sna} ${site.sbi}/${site.tot}`}
             description={site.ar}
           >
-                <Image
-              source={require("./img/bicycle.png")}
-              style={{ width: 20, height: 20 }}
-              resizeMode="contain"
+                
+             <VictoryPie
+            radius={17}
+            data={[
+              {x:site.tot-site.sbi,y:100-(site.sbi/site.tot)*100},
+              //全部減借走就是剩的車子   圓餅100%-減被借走車輛所佔的百分比
+              {x:site.sbi,y:(site.sbi/site.tot)*100},
+              //被借走的
+            ]}
+            colorScale={dataColor}
+            innerRadius={7}
+            labelRadius={10}
             />
           </Marker>
         ))}
